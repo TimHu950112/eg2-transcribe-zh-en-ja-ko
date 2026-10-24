@@ -1,0 +1,5 @@
+# transcribe.py / webtest (ffmpeg must be on PATH)
+numpy
+opencc-python-reimplemented
+coremltools>=9.0 ; sys_platform == "darwin"
+ai-edge-litert>=2.2 ; sys_platform != "darwin"

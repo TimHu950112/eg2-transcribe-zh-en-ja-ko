@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>逐字稿測試</title>
+<style>
+:root {
+  --paper: #faf7f2; --surface: #ffffff; --ink: #1f1d1a; --soft: #6f6a62; --line: #e8e2d8;
+  --violet: #6b5bd6; --violet-bg: rgba(107, 91, 214, .09); --coral: #f06a4f; --coral-bg: rgba(240, 106, 79, .1);
+}
+@media (prefers-color-scheme: dark) {
+  :root { --paper: #171614; --surface: #211f1c; --ink: #f1ede6; --soft: #a39d93; --line: #34312c;
+          --violet: #9a8cff; --violet-bg: rgba(154, 140, 255, .13); --coral: #ff8a70; --coral-bg: rgba(255, 138, 112, .13); }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.55 -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Hiragino Sans", "Apple SD Gothic Neo", sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 28px 16px 80px; }
+h1 { font-size: 24px; margin: 0 0 4px; letter-spacing: -.01em; }
+.sub { color: var(--soft); margin: 0 0 22px; font-size: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 18px; margin-bottom: 16px; }
+.drop { border: 2px dashed var(--line); border-radius: 16px; padding: 30px 16px; text-align: center; cursor: pointer; transition: .15s; }
+.drop:hover, .drop.over { border-color: var(--violet); background: var(--violet-bg); }
+.drop b { display: block; font-size: 16px; margin-bottom: 4px; }
+.drop small { color: var(--soft); }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.label { color: var(--soft); font-size: 13px; font-weight: 600; margin-right: 4px; }
+.chip { border: 1px solid var(--line); background: transparent; color: var(--ink); border-radius: 999px; padding: 6px 13px; font: inherit; font-size: 14px; cursor: pointer; }
+.chip.on { background: var(--violet); border-color: var(--violet); color: #fff; }
+.btn { border: 0; border-radius: 999px; padding: 9px 16px; font: inherit; font-weight: 600; font-size: 14px; cursor: pointer; background: var(--violet-bg); color: var(--violet); }
+.btn.rec { background: var(--coral-bg); color: var(--coral); }
+.btn.rec.live { background: var(--coral); color: #fff; }
+.btn:disabled { opacity: .45; cursor: default; }
+.opts { margin-top: 14px; display: grid; gap: 10px; }
+.job { padding: 0; overflow: hidden; }
+.job header { padding: 14px 18px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--line); }
+.job header .name { font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stats { color: var(--soft); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.prog { padding: 16px 18px; }
+.bar { height: 6px; background: var(--violet-bg); border-radius: 3px; overflow: hidden; margin-top: 8px; }
+.bar i { display: block; height: 100%; width: 0; background: var(--violet); transition: width .2s; }
+audio { width: 100%; display: block; }
+.player { padding: 12px 18px 4px; }
+.tabs { display: flex; gap: 6px; padding: 8px 18px 0; flex-wrap: wrap; align-items: center; }
+.tabs .sp { flex: 1; }
+.lines { list-style: none; margin: 8px 0 0; padding: 0 8px 10px; max-height: 60vh; overflow: auto; }
+.lines li { display: grid; grid-template-columns: 58px 1fr; gap: 10px; padding: 8px 10px; border-radius: 10px; cursor: pointer; }
+.lines li:hover { background: var(--violet-bg); }
+.lines li.now { background: var(--violet-bg); }
+.lines li.now .t { color: var(--violet); }
+.lines .t { color: var(--soft); font-size: 12.5px; font-variant-numeric: tabular-nums; padding-top: 2px; }
+.lines.draft li span:last-child { color: var(--soft); }
+.ch { transition: color .3s, background-color .8s; border-radius: 3px; }
+.ch.lit { color: var(--violet); background: var(--violet-bg); }
+.line-in { animation: linein .3s ease-out both; }
+@keyframes linein { from { color: var(--soft); } to { color: var(--ink); } }
+.refining { color: var(--violet); font-weight: 600; animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .45; } }
+.err { color: var(--coral); padding: 16px 18px; white-space: pre-wrap; }
+.empty { color: var(--soft); padding: 16px 18px; }
+.mini { background: none; border: 0; color: var(--soft); font: inherit; font-size: 13px; cursor: pointer; padding: 4px 6px; }
+.mini:hover { color: var(--ink); }
+@media (max-width: 520px) { .lines li { grid-template-columns: 48px 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>逐字稿測試</h1>
+  <p class="sub">跟 iOS 用的是同一個模型、同樣的語言判斷和斷句，結果就是手機上會看到的樣子。</p>
+
+  <section class="card">
+    <div class="drop" id="drop">
+      <b>拖進錄音檔，或點這裡選檔</b>
+      <small>WAV、MP3、M4A、AAC、FLAC、OGG、Opus、WebM、AMR、AIFF、CAF、WMA，影片檔（MP4、MOV）也可以；可以一次選好幾個</small>
+      <input id="file" type="file" multiple hidden
+        accept="audio/*,video/*,.wav,.wave,.mp3,.m4a,.aac,.flac,.ogg,.oga,.opus,.webm,.amr,.3gp,.aif,.aiff,.caf,.wma,.mp4,.mov,.mkv">
+    </div>
+    <div class="opts">
+      <div class="row">
+        <span class="label">語言</span>
+        <button class="chip on" data-lang="">自動判斷</button>
+        <button class="chip" data-lang="zh">中文</button>
+        <button class="chip" data-lang="en">English</button>
+        <button class="chip" data-lang="ja">日本語</button>
+        <button class="chip" data-lang="ko">한국어</button>
+      </div>
+      <div class="row">
+        <span class="label">輸出</span>
+        <button class="chip" id="hans">簡體</button>
+        <span class="sp" style="flex:1"></span>
+        <button class="btn rec" id="rec">● 直接錄一段</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="jobs"></div>
+</main>
+
+<script>
+const $ = (s, el = document) => el.querySelector(s);
+const langNames = { zh: "中文", en: "English", ja: "日本語", ko: "한국어" };
+let langs = new Set(), hans = false;
+const queue = [];
+let running = false;
+
+document.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => {
+  const l = b.dataset.lang;
+  if (!l) langs.clear(); else if (langs.has(l)) langs.delete(l); else langs.add(l);
+  document.querySelectorAll("[data-lang]").forEach(x => x.classList.toggle("on", x.dataset.lang ? langs.has(x.dataset.lang) : langs.size === 0));
+});
+$("#hans").onclick = e => { hans = !hans; e.target.classList.toggle("on", hans); };
+
+const drop = $("#drop"), input = $("#file");
+drop.onclick = () => input.click();
+input.onchange = () => { [...input.files].forEach(add); input.value = ""; };
+drop.ondragover = e => { e.preventDefault(); drop.classList.add("over"); };
+drop.ondragleave = () => drop.classList.remove("over");
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove("over"); [...e.dataTransfer.files].forEach(add); };
+
+// Record straight from the microphone.
+let rec = null, chunks = [], recStart = 0, recTimer = null;
+$("#rec").onclick = async () => {
+  const btn = $("#rec");
+  if (rec) { rec.stop(); return; }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    rec = new MediaRecorder(stream); chunks = [];
+    rec.ondataavailable = e => chunks.push(e.data);
+    rec.onstop = () => {
+      stream.getTracks().forEach(t => t.stop()); clearInterval(recTimer);
+      const type = rec.mimeType || "audio/webm";
+      const ext = type.includes("mp4") ? "m4a" : type.includes("ogg") ? "ogg" : "webm";
+      add(new File(chunks, `錄音 ${new Date().toLocaleTimeString()}.${ext}`, { type }));
+      rec = null; btn.classList.remove("live"); btn.textContent = "● 直接錄一段";
+    };
+    rec.start(); recStart = Date.now(); btn.classList.add("live");
+    recTimer = setInterval(() => btn.textContent = "■ 停止 " + clock((Date.now() - recStart)), 250);
+  } catch (e) { alertJob("沒辦法用麥克風：" + e.message); }
+};
+
+function clock(ms) {
+  const s = Math.floor(ms / 1000);
+  return s >= 3600 ? `${Math.floor(s / 3600)}:${String(Math.floor(s / 60) % 60).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`
+                   : `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+}
+function esc(s) { return s.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c])); }
+function alertJob(msg) {
+  const el = document.createElement("section"); el.className = "card job";
+  el.innerHTML = `<div class="err">${esc(msg)}</div>`; $("#jobs").prepend(el);
+}
+
+function add(file) {
+  const el = document.createElement("section");
+  el.className = "card job";
+  el.innerHTML = `<header><span class="name"></span><span class="stats">排隊中…</span><button class="mini" title="移除">✕</button></header>
+    <div class="prog"><span class="stage">等待中</span><div class="bar"><i></i></div></div>
+    <ul class="lines draft" hidden></ul>`;
+  $(".name", el).textContent = file.name;
+  $(".mini", el).onclick = () => el.remove();
+  $("#jobs").prepend(el);
+  queue.push({ file, el, langs: [...langs], hans });
+  pump();
+}
+
+async function pump() {
+  if (running || !queue.length) return;
+  running = true;
+  const job = queue.shift();
+  try { await run(job); } catch (e) { $(".prog", job.el).outerHTML = `<div class="err">${esc(String(e.message || e))}</div>`; }
+  running = false; pump();
+}
+
+async function run({ file, el, langs, hans }) {
+  const stage = $(".stage", el), bar = $(".bar i", el), stats = $(".stats", el);
+  stats.textContent = "上傳中…"; stage.textContent = "上傳中";
+  const res = await fetch(`/transcribe?lang=${langs.join(",")}&hans=${hans ? 1 : 0}`, { method: "POST", body: file });
+  if (!res.ok) throw new Error("伺服器錯誤 " + res.status);
+  const reader = res.body.getReader(), dec = new TextDecoder();
+  let buf = "", result = null, secs = 0, draftLines = null;
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let i;
+    while ((i = buf.indexOf("\n")) >= 0) {
+      const msg = JSON.parse(buf.slice(0, i)); buf = buf.slice(i + 1);
+      if (msg.error) throw new Error("沒有轉成功：" + msg.error);
+      if (msg.seconds) secs = msg.seconds;
+      if (msg.stage === "decode") { stage.textContent = "解碼音檔…"; stats.textContent = "處理中"; }
+      if (msg.stage === "model") { stage.textContent = `辨識中 ${Math.round(msg.progress * 100)}%` + (secs ? `（長度 ${clock(secs * 1000)}）` : ""); bar.style.width = msg.progress * 100 + "%"; }
+      if (msg.stage === "beam") { stage.innerHTML = `<span class="refining">✨ 揪AI 正在挑字…（${langNames[msg.lang]}）</span>`; bar.style.width = "100%"; }
+      if (msg.draft) {
+        // The rough draft as it grows, grey, newest at the bottom.
+        const ul = $(".lines.draft", el); ul.hidden = false;
+        ul.innerHTML = msg.draft.map(l => `<li><span class="t">${clock(l.start)}</span><span>${esc(l.text)}</span></li>`).join("");
+        ul.scrollTop = ul.scrollHeight; draftLines = msg.draft;
+      }
+      if (msg.result) result = msg.result;
+    }
+  }
+  if (!result) throw new Error("沒有收到結果");
+  $(".lines.draft", el).remove();
+  show(el, file, result, langs, draftLines);
+}
+
+// Characters of each final line that aren't in the draft at the same time (LCS per line).
+function changes(finals, draft) {
+  const out = new Map();
+  if (!draft) return out;
+  for (const line of finals) {
+    const before = [...draft.filter(d => d.start >= line.start - 300 && d.start < line.end).map(d => d.text).join("")];
+    const after = [...line.text];
+    const n = before.length, m = after.length;
+    if (n * m > 400000) continue;
+    const dp = Array.from({ length: n + 1 }, () => new Int32Array(m + 1));
+    for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--)
+      dp[i][j] = before[i] === after[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    const kept = new Set(); let i = 0, j = 0;
+    while (i < n && j < m) { if (before[i] === after[j]) { kept.add(j); i++; j++; } else if (dp[i + 1][j] >= dp[i][j + 1]) i++; else j++; }
+    const ch = new Set(after.map((_, k) => k).filter(k => !kept.has(k) && after[k].trim()));
+    if (ch.size) out.set(line.start, ch);
+  }
+  return out;
+}
+
+function show(el, file, r, asked, draft) {
+  let reveal = draft ? { at: performance.now(), changed: changes(r.lines, draft) } : null;
+  const t = r.timing;
+  $(".stats", el).textContent = `${clock(r.seconds * 1000)} · ${langNames[r.lang]}${asked.length === 1 ? "" : "（自動判斷）"} · 花了 ${t.total.toFixed(1)} 秒（${(r.seconds / Math.max(t.total, .01)).toFixed(1)}× 即時）`;
+  const url = URL.createObjectURL(file);
+  $(".prog", el).outerHTML = `
+    <div class="player"><audio controls preload="metadata" src="${url}"></audio></div>
+    <div class="tabs">
+      <button class="chip on" data-v="lines">揪AI（有語言模型）</button>
+      <button class="chip" data-v="greedy">不用語言模型</button>
+      <span class="sp"></span>
+      <button class="mini" data-a="copy">複製</button>
+      <button class="mini" data-a="txt">下載 .txt</button>
+      <button class="mini" data-a="srt">下載 .srt</button>
+    </div>
+    <ul class="lines"></ul>`;
+  const audio = $("audio", el), list = $(".lines", el);
+  let view = "lines";
+  const render = () => {
+    const ls = r[view];
+    list.innerHTML = ls.length ? "" : `<li class="empty">（沒有聽到說話）</li>`;
+    ls.forEach((l, idx) => {
+      const li = document.createElement("li");
+      const changed = view === "lines" && reveal ? reveal.changed.get(l.start) : null;
+      const wait = reveal ? idx * 60 - (performance.now() - reveal.at) : -1;
+      if (view === "lines" && reveal && wait > -3000) {
+        // Top to bottom, 60 ms apart: grey -> ink, the characters the language model changed lit for a moment.
+        const body = [...l.text].map((c, k) => changed && changed.has(k) ? `<span class="ch">${esc(c)}</span>` : esc(c)).join("");
+        li.innerHTML = `<span class="t">${clock(l.start)}</span><span class="line-in" style="animation-delay:${Math.max(0, wait)}ms">${body}</span>`;
+        const lit = [...li.querySelectorAll(".ch")];
+        setTimeout(() => lit.forEach(x => x.classList.add("lit")), Math.max(0, wait));
+        setTimeout(() => lit.forEach(x => x.classList.remove("lit")), Math.max(0, wait) + 1300);
+      } else
+      li.innerHTML = `<span class="t">${clock(l.start)}</span><span>${esc(l.text)}</span>`;
+      li.onclick = () => { audio.currentTime = l.start / 1000; audio.play(); };
+      list.append(li);
+    });
+  };
+  render();
+  el.querySelectorAll("[data-v]").forEach(b => b.onclick = () => {
+    view = b.dataset.v; reveal = null; el.querySelectorAll("[data-v]").forEach(x => x.classList.toggle("on", x === b)); render();
+  });
+  let lastNow = -1;
+  audio.ontimeupdate = () => {
+    const ms = audio.currentTime * 1000, ls = r[view];
+    let now = -1;
+    for (let i = 0; i < ls.length; i++) if (ls[i].start <= ms) now = i;
+    if (now >= 0 && ms > ls[now].end) now = -1;
+    if (now === lastNow) return;
+    lastNow = now;
+    [...list.children].forEach((li, i) => li.classList.toggle("now", i === now));
+    if (now >= 0 && !audio.paused) list.children[now].scrollIntoView({ block: "nearest", behavior: "smooth" });
+  };
+  const base = file.name.replace(/\.[^.]+$/, "");
+  const srtTime = ms => { const d = new Date(ms); return `${String(Math.floor(ms / 3600000)).padStart(2, "0")}:${String(d.getUTCMinutes()).padStart(2, "0")}:${String(d.getUTCSeconds()).padStart(2, "0")},${String(d.getUTCMilliseconds()).padStart(3, "0")}`; };
+  const save = (name, text) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: "text/plain" })); a.download = name; a.click(); };
+  el.querySelector("[data-a=copy]").onclick = e => { navigator.clipboard.writeText(r[view].map(l => l.text).join("\n")); e.target.textContent = "已複製"; setTimeout(() => e.target.textContent = "複製", 1200); };
+  el.querySelector("[data-a=txt]").onclick = () => save(base + ".txt", r[view].map(l => `[${clock(l.start)}] ${l.text}`).join("\n"));
+  el.querySelector("[data-a=srt]").onclick = () => save(base + ".srt", r[view].map((l, i) => `${i + 1}\n${srtTime(l.start)} --> ${srtTime(l.end)}\n${l.text}\n`).join("\n"));
+}
+</script>
+</body>
+</html>

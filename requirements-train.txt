@@ -1,0 +1,12 @@
+# src/ (training, n-grams, export)
+torch>=2.14
+transformers>=5.19
+numpy
+librosa
+soundfile
+pyarrow
+jiwer
+pypinyin  # src/diagnose.py only
+opencc-python-reimplemented
+coremltools>=9.0
+# LiteRT export runs in its own venv: pip install litert-torch ai-edge-litert
