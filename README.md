@@ -43,7 +43,7 @@
 git clone https://github.com/TimHu950112/eg2-transcribe-zh-en-ja-ko
 cd eg2-transcribe-zh-en-ja-ko
 pip install -r requirements.txt
-scripts/download_models.sh            # 約 500 MB，放到 models/
+scripts/download_models.sh            # macOS 約 310 MB、其他平台約 500 MB，放到 models/
 
 python transcribe.py 錄音.m4a                    # 自動判斷語言
 python transcribe.py 會議.mp3 --lang zh --hans   # 指定中文，輸出簡體
@@ -100,7 +100,7 @@ python transcribe.py 演講.wav --srt > 演講.srt   # 輸出字幕檔
 
 ## 關於
 
-這是 Join Note 筆記 App 裡「揪AI 逐字稿」功能的 v4 模型：錄完音，逐字稿直接在手機上產生。作者：胡廷鋒（Tim Hu）。
+這是筆記 App「揪筆記（Join Note）」 裡「揪AI 逐字稿」功能的 v4 模型：錄完音，逐字稿直接在手機上產生。作者：胡廷鋒（Tim Hu）。
 
 ---
 
@@ -133,7 +133,7 @@ The spontaneous set's references are YouTube subtitles that are often not verbat
 
 ```sh
 pip install -r requirements.txt        # plus ffmpeg on PATH
-scripts/download_models.sh             # ~500 MB into models/
+scripts/download_models.sh             # ~310 MB on macOS, ~500 MB elsewhere, into models/
 python transcribe.py recording.m4a [--lang zh|en|ja|ko] [--hans] [--srt]
 python webtest/server.py               # browser test page on http://127.0.0.1:8770
 ```
